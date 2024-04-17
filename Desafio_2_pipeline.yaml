@@ -1,0 +1,47 @@
+name: App_Node.js
+
+on:
+  push:
+    branches:
+      - main  #Vai ser acionado quando tiver um push na branch main.
+
+jobs:
+  build:
+    name: Build
+    runs-on: centos-latest #Versão de linux escolhida.
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16.17.0'
+
+    - name: Install dependencies #Vai instalar as dependencias do package.json do projeto.
+      run: npm install 
+
+    - name: Run tests #Vai rodar os testes no node.js
+      run: npm test
+
+   deploy:
+    name: Deploy
+    runs-on: centos-latest
+    needs: build
+    environment:
+      name: production
+
+    steps:
+    - name: Deploy to AWS
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: your-aws-region
+
+    - name: Deploy to EC2
+      run: |
+        aws ec2 describe-instances --filters "Name=tag:Name,Values=your-ec2-instance-name" --query "Reservations[].Instances[].InstanceId" --output text
+        aws deploy create-deployment --application-name your-application-name --deployment-group-name your-deployment-group-name --s3-location bucket=your-s3-bucket,bundleType=tgz,key=your-app-package.tgz --deployment-config-name CodeDeployDefault.OneAtATime --instance-ids instance-id-1 instance-id-2
+

@@ -1,0 +1,30 @@
+# Solução em Nuvem para Aplicação Node.js na AWS ECS e Monitoração.
+
+## Arquitetura da Solução
+
+A arquitetura da solução envolve os seguintes componentes:
+ECS - Usar certificado SSL com TLS para garantir a segurança dos dados quando a APP for acessado via https.
+EC2 - Configurar utilizando grupos de segurança para restringir tráfego de entrada e saída.
+Usar IAM com roles de permissões de serviços da AWS. Criar o servidor ja com tamanho adequado para aplicação de acordo com os acessos simultâneos por usuário definido em projeto, não utilizaria o auto scaling no ambiente para atender o FinOps sem os custos desnecessários.
+RDS - Banco de dados para aplicação. Criar backups automáticos durante horários menos utilizados da aplicação para redução de riscos. Grupo de segurança para restrição de acesso ao banco de dados.
+FinOps - Tag para identificar recursos e atribuir custos. Alertas de limite de orçamento de infra. Geração de relatórios mensais afim de fazer o rateio por centro de custo dentro da compania.
+Dependendo do projeto se a aplicação não for 24 horas implementaria um Cloud Schedule para parar os serviços em momento de nao utilização, por exemplo, madrugada, sábado e domingo.
+Configurar o ambiente em uma VPC para isolar a rede da aplicação e banco de dados.
+Configurar o Route53 para direcionar o tráfego.
+Configurar o CloudWath para monitorar as métricas e desempenho do ambiente.
+
+## Monitoração
+
+Amazon CloudWatch - Coletar e armazenar métricas operacionais, como utilização de CPU, memória e espaço em disco dos contêineres, bem como logs de aplicação e sistema.
+
+AWS CloudWatch Logs - Configurar os contêineres para enviar logs para o CloudWatch Logs, onde podemos analisá-los e monitorá-los em tempo real.
+Alertas - Configurar alertas no CloudWatch para sermos notificados por e-mail ou SMS em caso de problemas de desempenho ou disponibilidade, como alta utilização de CPU, falhas de contêineres etc.
+Dashboard de Monitoração - Criar dashboards personalizados no CloudWatch para visualizar as métricas mais importantes da nossa aplicação e infraestrutura.
+
+## Monitorações importantes adicionais:
+Tempo de resposta chamadas de serviço.
+Tempo de resposta entre principais selects no banco com usuários de aplicação.
+Validação de objetos inválidos.
+Validação de usuários com locks no banco de dados.
+Validação de usuários inativos na aplicação. 
+Validações de url de aplicação de acesso intenet e externo.
